@@ -1,76 +1,184 @@
 package techguardian.api.service;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.itextpdf.io.source.ByteArrayOutputStream;
-import com.itextpdf.kernel.pdf.PdfDocument;
-import com.itextpdf.kernel.pdf.PdfWriter;
-import com.itextpdf.layout.Document;
-import com.itextpdf.layout.element.Cell;
-import com.itextpdf.layout.element.Paragraph;
-import com.itextpdf.layout.element.Table;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.FontFactory;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
 
 import techguardian.api.entity.Input;
-import techguardian.api.repository.InputRepository;
+import techguardian.api.entity.Output;
 
 @Service
 public class PDFService {
 
-    private static final Logger logger = LoggerFactory.getLogger(PDFService.class);
+    public static ByteArrayInputStream inputReport(List<Input> inputs) {
 
-    @Autowired
-    private InputRepository inputRepository;
-
-    public ByteArrayInputStream generatePdf() {
-        List<Input> inputs = inputRepository.findAll();
-
+        Document document = new Document();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
         try {
-            PdfWriter writer = new PdfWriter(out);
-            PdfDocument pdf = new PdfDocument(writer);
-            Document document = new Document(pdf);
 
-            // Título
-            Paragraph title = new Paragraph("Relatório de Entradas")
-                    .setFontSize(18)
-                    .setBold()
-                    .setMarginBottom(20);
-            document.add(title);
+            PdfPTable table = new PdfPTable(5); 
+            table.setWidthPercentage(80);
+            table.setWidths(new int[] { 4, 4, 4, 4, 4 }); 
 
-            // Tabela
-            float[] columnWidths = {50, 80, 80, 80, 80, 150};
-            Table table = new Table(columnWidths);
+            Font headFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD);
 
-            // Cabeçalho
-            table.addHeaderCell(new Cell().add(new Paragraph("ID")));
-            table.addHeaderCell(new Cell().add(new Paragraph("Data Entrada")));
-            table.addHeaderCell(new Cell().add(new Paragraph("Hora Entrada")));
-            table.addHeaderCell(new Cell().add(new Paragraph("Quantidade Entrada")));
-            table.addHeaderCell(new Cell().add(new Paragraph("Status Entrada")));
-            table.addHeaderCell(new Cell().add(new Paragraph("Observação Entrada")));
+            PdfPCell hcell;
+            hcell = new PdfPCell(new Phrase("Data", headFont));
+            hcell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            table.addCell(hcell);
 
-            // Dados
+            hcell = new PdfPCell(new Phrase("Hora", headFont));
+            hcell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            table.addCell(hcell);
+
+            hcell = new PdfPCell(new Phrase("Quantidade", headFont));
+            hcell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            table.addCell(hcell);
+
+            hcell = new PdfPCell(new Phrase("Observação", headFont)); 
+            hcell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            table.addCell(hcell);
+
+            hcell = new PdfPCell(new Phrase("Status", headFont));   
+            hcell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            table.addCell(hcell);
+
             for (Input input : inputs) {
-                table.addCell(new Cell().add(new Paragraph(input.getId().toString())));
-                table.addCell(new Cell().add(new Paragraph(input.getDataEntrada())));
-                table.addCell(new Cell().add(new Paragraph(input.getHoraEntrada())));
-                table.addCell(new Cell().add(new Paragraph(input.getQuantEntrada().toString())));
-                table.addCell(new Cell().add(new Paragraph(input.getStatus())));
-                table.addCell(new Cell().add(new Paragraph(input.getObsEntrada())));
+
+                PdfPCell cell;
+
+                cell = new PdfPCell(new Phrase(input.getDataEntrada()));
+                cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+                cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                table.addCell(cell);
+
+                cell = new PdfPCell(new Phrase(input.getHoraEntrada()));
+                cell.setPaddingLeft(5);
+                cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+                cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                table.addCell(cell);
+
+                cell = new PdfPCell(new Phrase(String.valueOf(input.getQuantEntrada())));
+                cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+                cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                cell.setPaddingRight(5);
+                table.addCell(cell);
+
+                cell = new PdfPCell(new Phrase(String.valueOf(input.getObsEntrada())));   
+                cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+                cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                cell.setPaddingRight(5);
+                table.addCell(cell);
+
+                cell = new PdfPCell(new Phrase(String.valueOf(input.getStatus()))); 
+                cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+                cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                cell.setPaddingRight(5);
+                table.addCell(cell);
             }
 
+            PdfWriter.getInstance(document, out);
+            document.open();
             document.add(table);
+
             document.close();
 
-        } catch (Exception e) {
-            logger.error("Erro ao gerar PDF", e);
+        } catch (DocumentException ex) {
+
+        }
+
+        return new ByteArrayInputStream(out.toByteArray());
+    }
+
+    public static ByteArrayInputStream outputReport(List<Output> outputs) {
+
+        Document document = new Document();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+        try {
+
+            PdfPTable table = new PdfPTable(5); 
+            table.setWidthPercentage(80);
+            table.setWidths(new int[] { 4, 4, 4, 4, 4 }); 
+
+            Font headFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD);
+
+            PdfPCell hcell;
+            hcell = new PdfPCell(new Phrase("Data", headFont));
+            hcell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            table.addCell(hcell);
+
+            hcell = new PdfPCell(new Phrase("Hora", headFont));
+            hcell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            table.addCell(hcell);
+
+            hcell = new PdfPCell(new Phrase("Quantidade", headFont));
+            hcell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            table.addCell(hcell);
+
+            hcell = new PdfPCell(new Phrase("Observação", headFont)); 
+            hcell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            table.addCell(hcell);
+
+            hcell = new PdfPCell(new Phrase("Status", headFont));   
+            hcell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            table.addCell(hcell);
+
+            for (Output output : outputs) {
+
+                PdfPCell cell;
+
+                cell = new PdfPCell(new Phrase(output.getDataSaida()));
+                cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+                cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                table.addCell(cell);
+
+                cell = new PdfPCell(new Phrase(output.getHoraSaida()));
+                cell.setPaddingLeft(5);
+                cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+                cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                table.addCell(cell);
+
+                cell = new PdfPCell(new Phrase(String.valueOf(output.getQuantSaida())));
+                cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+                cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                cell.setPaddingRight(5);
+                table.addCell(cell);
+
+                cell = new PdfPCell(new Phrase(String.valueOf(output.getObsSaida())));   
+                cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+                cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                cell.setPaddingRight(5);
+                table.addCell(cell);
+
+                cell = new PdfPCell(new Phrase(String.valueOf(output.getStatus()))); 
+                cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+                cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                cell.setPaddingRight(5);
+                table.addCell(cell);
+            }
+
+            PdfWriter.getInstance(document, out);
+            document.open();
+            document.add(table);
+
+            document.close();
+
+        } catch (DocumentException ex) {
+            
         }
 
         return new ByteArrayInputStream(out.toByteArray());
