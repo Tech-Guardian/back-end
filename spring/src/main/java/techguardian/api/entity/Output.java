@@ -26,7 +26,7 @@ public class Output {
     private Integer quantSaida;
     
     @Column(name = "status_saida")
-    private String status;
+    private String statusSaida;
 
     @Column(name = "obs_saida")
     private String obsSaida;
@@ -63,12 +63,12 @@ public class Output {
         this.quantSaida = quantSaida;
     }
 
-    public String getStatus() {
-        return status;
+    public String getStatusSaida() {
+        return statusSaida;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setStatusSaida(String statusSaida) {
+        this.statusSaida = statusSaida;
     }
 
     public String getObsSaida() {

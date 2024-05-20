@@ -26,7 +26,7 @@ public class OutputService {
         output.setDataSaida(createdOutput.getDataSaida());
         output.setHoraSaida(createdOutput.getHoraSaida());
         output.setQuantSaida(createdOutput.getQuantSaida());
-        output.setStatus(createdOutput.getStatus());
+        output.setStatusSaida(createdOutput.getStatusSaida());
         output.setObsSaida(createdOutput.getObsSaida());
 
         return outRepo.save(output);
@@ -48,12 +48,12 @@ public class OutputService {
         existOutput.setQuantSaida(updatedOutput.getQuantSaida());
     }
 
-    if (!ObjectUtils.isEmpty(updatedOutput.getStatus())) {
-        existOutput.setStatus(updatedOutput.getStatus());
+    if (!ObjectUtils.isEmpty(updatedOutput.getStatusSaida())) {
+        existOutput.setStatusSaida(updatedOutput.getStatusSaida());
     }
     
     if (!ObjectUtils.isEmpty(updatedOutput.getObsSaida())) {
-        existOutput.setStatus(updatedOutput.getObsSaida());    
+        existOutput.setObsSaida(updatedOutput.getObsSaida());    
     }
 
     return outRepo.save(existOutput);
