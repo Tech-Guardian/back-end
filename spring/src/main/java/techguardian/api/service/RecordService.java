@@ -11,6 +11,7 @@ import java.util.List;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.IndexedColors;
@@ -170,21 +171,29 @@ public class RecordService {
             List<Output> outputs = outRepo.findByDataSaida(date);
             createHeaderRow(workbook, sheet, "ID", "Data", "Hora", "Quantidade", "Observações", "Status");
     
+            CellStyle dateCellStyle = workbook.createCellStyle();
+            CreationHelper createHelper = workbook.getCreationHelper();
+            dateCellStyle.setDataFormat(createHelper.createDataFormat().getFormat("yyyy-MM-dd"));
+
             int rowNum = 1;
             for (Input input : inputs) {
                 XSSFRow row = sheet.createRow(rowNum++);
                 row.createCell(0).setCellValue(input.getId());
-                row.createCell(1).setCellValue(input.getDataEntrada());
+                Cell dateCell = row.createCell(1);
+                dateCell.setCellValue(input.getDataEntrada());
+                dateCell.setCellStyle(dateCellStyle);
                 row.createCell(2).setCellValue(input.getHoraEntrada().toString());
                 row.createCell(3).setCellValue(input.getQuantEntrada());
                 row.createCell(4).setCellValue(input.getObsEntrada());
                 row.createCell(5).setCellValue(input.getStatusEntrada());
             }
-    
+
             for (Output output : outputs) {
                 XSSFRow row = sheet.createRow(rowNum++);
                 row.createCell(0).setCellValue(output.getId());
-                row.createCell(1).setCellValue(output.getDataSaida());
+                Cell dateCell = row.createCell(1);
+                dateCell.setCellValue(output.getDataSaida());
+                dateCell.setCellStyle(dateCellStyle);
                 row.createCell(2).setCellValue(output.getHoraSaida().toString());
                 row.createCell(3).setCellValue(output.getQuantSaida());
                 row.createCell(4).setCellValue(output.getObsSaida());
