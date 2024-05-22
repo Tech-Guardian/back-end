@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -88,6 +89,37 @@ public class RecordService {
         csvWriter.close();
     }
 
+    //buscar por data
+    public void exportCSVLocalDate(HttpServletResponse response, LocalDate date) throws IOException {
+        response.setContentType("text/csv");
+        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+        String currentDateTime = dateFormatter.format(new Date());
+
+        String headerKey = "Content-Disposition";
+        String headerValue = "attachment; filename=Registro_" + currentDateTime + ".csv";
+        response.setHeader(headerKey, headerValue);
+
+        List<Input> inputs = inputRepo.findByDataEntrada(date);
+        List<Output> outputs = outRepo.findByDataSaida(date);
+
+        ICsvBeanWriter csvWriter = new CsvBeanWriter(response.getWriter(), CsvPreference.STANDARD_PREFERENCE);
+        String[] csvHeader = {"ID", "Data", "Hora", "Quantidade", "Observações", "Status"};
+        String[] inputMapping = {"id", "dataEntrada", "horaEntrada", "quantEntrada", "obsEntrada", "statusEntrada"};
+        String[] outputMapping = {"id", "dataSaida", "horaSaida", "quantSaida", "obsSaida", "statusSaida"};
+
+        csvWriter.writeHeader(csvHeader);
+
+        for (Input input : inputs) {
+            csvWriter.write(input, inputMapping);
+        }
+
+        for (Output output : outputs) {
+            csvWriter.write(output, outputMapping);
+        }
+
+        csvWriter.close();
+    }
+
     //excel 
     public ResponseEntity<byte[]> exportExcel() {
         try (XSSFWorkbook workbook = new XSSFWorkbook()) {
@@ -102,7 +134,7 @@ public class RecordService {
                 XSSFRow row = sheet.createRow(rowNum++);
                 row.createCell(0).setCellValue(input.getId());
                 row.createCell(1).setCellValue(input.getDataEntrada());
-                row.createCell(2).setCellValue(input.getHoraEntrada());
+                row.createCell(2).setCellValue(input.getHoraEntrada().toString());
                 row.createCell(3).setCellValue(input.getQuantEntrada());
                 row.createCell(4).setCellValue(input.getObsEntrada());
                 row.createCell(5).setCellValue(input.getStatusEntrada());
@@ -112,7 +144,48 @@ public class RecordService {
                 XSSFRow row = sheet.createRow(rowNum++);
                 row.createCell(0).setCellValue(output.getId());
                 row.createCell(1).setCellValue(output.getDataSaida());
-                row.createCell(2).setCellValue(output.getHoraSaida());
+                row.createCell(2).setCellValue(output.getHoraSaida().toString());
+                row.createCell(3).setCellValue(output.getQuantSaida());
+                row.createCell(4).setCellValue(output.getObsSaida());
+                row.createCell(5).setCellValue(output.getStatusSaida());
+            }
+    
+            createChart(sheet, inputs.size(), "Quantidade de Entrada");
+    
+            autoSizeColumns(sheet, 6);
+    
+            return createResponseEntity(workbook, "Registro.xlsx");
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    //buscar por data 
+    public ResponseEntity<byte[]> exportExcelLocalDate(LocalDate date) {
+        try (XSSFWorkbook workbook = new XSSFWorkbook()) {
+            XSSFSheet sheet = workbook.createSheet("Registro");
+    
+            List<Input> inputs = inputRepo.findByDataEntrada(date);
+            List<Output> outputs = outRepo.findByDataSaida(date);
+            createHeaderRow(workbook, sheet, "ID", "Data", "Hora", "Quantidade", "Observações", "Status");
+    
+            int rowNum = 1;
+            for (Input input : inputs) {
+                XSSFRow row = sheet.createRow(rowNum++);
+                row.createCell(0).setCellValue(input.getId());
+                row.createCell(1).setCellValue(input.getDataEntrada());
+                row.createCell(2).setCellValue(input.getHoraEntrada().toString());
+                row.createCell(3).setCellValue(input.getQuantEntrada());
+                row.createCell(4).setCellValue(input.getObsEntrada());
+                row.createCell(5).setCellValue(input.getStatusEntrada());
+            }
+    
+            for (Output output : outputs) {
+                XSSFRow row = sheet.createRow(rowNum++);
+                row.createCell(0).setCellValue(output.getId());
+                row.createCell(1).setCellValue(output.getDataSaida());
+                row.createCell(2).setCellValue(output.getHoraSaida().toString());
                 row.createCell(3).setCellValue(output.getQuantSaida());
                 row.createCell(4).setCellValue(output.getObsSaida());
                 row.createCell(5).setCellValue(output.getStatusSaida());

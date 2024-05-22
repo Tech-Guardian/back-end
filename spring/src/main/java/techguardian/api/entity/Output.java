@@ -1,5 +1,8 @@
 package techguardian.api.entity;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -17,10 +20,10 @@ public class Output {
     private Long id;
 
     @Column(name = "data_saida")
-    private String dataSaida;
+    private LocalDate dataSaida;
 
     @Column(name = "hora_saida")
-    private String horaSaida;
+    private LocalTime horaSaida;
 
     @Column(name = "quant_saida")
     private Integer quantSaida;
@@ -39,19 +42,19 @@ public class Output {
         this.id = id;
     }
 
-    public String getDataSaida() {
+    public LocalDate getDataSaida() {
         return dataSaida;
     }
 
-    public void setDataSaida(String dataSaida) {
+    public void setDataSaida(LocalDate dataSaida) {
         this.dataSaida = dataSaida;
     }
 
-    public String getHoraSaida() {
+    public LocalTime getHoraSaida() {
         return horaSaida;
     }
 
-    public void setHoraSaida(String horaSaida) {
+    public void setHoraSaida(LocalTime horaSaida) {
         this.horaSaida = horaSaida;
     }
 
