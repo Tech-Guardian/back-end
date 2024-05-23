@@ -12,4 +12,6 @@ import techguardian.api.entity.Input;
 public interface InputRepository extends JpaRepository<Input, Long> {
 
     List<Input> findByDataEntrada(LocalDate dataEntrada);
+
+    List<Input> findByDataEntradaBetween(LocalDate startDate, LocalDate endDate);
 }

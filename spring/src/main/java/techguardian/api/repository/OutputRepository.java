@@ -12,4 +12,6 @@ import techguardian.api.entity.Output;
 public interface OutputRepository extends JpaRepository<Output, Long>{
 
     List<Output> findByDataSaida(LocalDate dataSaida);
+
+    List<Output> findByDataSaidaBetween(LocalDate startDate, LocalDate endDate);
 }

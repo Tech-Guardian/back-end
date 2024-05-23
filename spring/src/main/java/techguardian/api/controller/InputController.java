@@ -40,6 +40,7 @@ public class InputController {
         Input updatedInput = inputService.updateInput(id, input);
         return ResponseEntity.ok(updatedInput);
     }
+    
     @DeleteMapping("/entrada/{id}")
     public ResponseEntity<String> deleteInput(@PathVariable Long id) {
         try {

@@ -27,8 +27,15 @@ public class RecordController {
     }
 
     @GetMapping("/date-csv")
-    public void exportCSVLocalDate(@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date, HttpServletResponse response) throws IOException {
-        recordService.exportCSVLocalDate(response, date);
+    public void exportCSVData(@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date, HttpServletResponse response) throws IOException {
+        recordService.exportCSVData(response, date);
+    }
+
+    @GetMapping("/dates-csv")
+    public void exportCSVDataBetween(@RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+                        @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+                        HttpServletResponse response) throws IOException {
+        recordService.exportCSVDataBetween(response, startDate, endDate);
     }
 
     @GetMapping("/excel")
@@ -37,7 +44,13 @@ public class RecordController {
     }
 
     @GetMapping("/date-excel")
-    public ResponseEntity<byte[]> exportExcelLocalDate(@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-        return recordService.exportExcelLocalDate(date);
+    public ResponseEntity<byte[]> exportExcelData(@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        return recordService.exportExcelData(date);
+    }
+
+    @GetMapping("/dates-excel")
+    public ResponseEntity<byte[]> exportExcelDataBetween(@RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+                                            @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+        return recordService.exportExcelDataBetween(startDate, endDate);
     }
 }

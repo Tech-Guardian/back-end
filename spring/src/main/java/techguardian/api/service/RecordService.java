@@ -2,6 +2,7 @@ package techguardian.api.service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.Writer;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -61,18 +62,37 @@ public class RecordService {
     private OutputRepository outRepo;
 
     public void exportCSV(HttpServletResponse response) throws IOException {
+        setupCSVResponse(response);
+        List<Input> listInput = inputRepo.findAll();
+        List<Output> listOutput = outRepo.findAll();
+        writeCSVData(response.getWriter(), listInput, listOutput);
+    }
+
+    public void exportCSVData(HttpServletResponse response, LocalDate date) throws IOException {
+        setupCSVResponse(response);
+        List<Input> listInput = inputRepo.findByDataEntrada(date);
+        List<Output> listOutput = outRepo.findByDataSaida(date);
+        writeCSVData(response.getWriter(), listInput, listOutput);
+    }
+
+    public void exportCSVDataBetween(HttpServletResponse response, LocalDate startDate, LocalDate endDate) throws IOException {
+        setupCSVResponse(response);
+        List<Input> listInput = inputRepo.findByDataEntradaBetween(startDate, endDate);
+        List<Output> listOutput = outRepo.findByDataSaidaBetween(startDate, endDate);
+        writeCSVData(response.getWriter(), listInput, listOutput);
+    }
+
+    private void setupCSVResponse(HttpServletResponse response) {
         response.setContentType("text/csv");
         DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
         String currentDateTime = dateFormatter.format(new Date());
-
         String headerKey = "Content-Disposition";
         String headerValue = "attachment; filename=Registro_" + currentDateTime + ".csv";
         response.setHeader(headerKey, headerValue);
+    }
 
-        List<Input> listInput = inputRepo.findAll();
-        List<Output> listOutput = outRepo.findAll();
-
-        ICsvBeanWriter csvWriter = new CsvBeanWriter(response.getWriter(), CsvPreference.STANDARD_PREFERENCE);
+    private void writeCSVData(Writer writer, List<Input> listInput, List<Output> listOutput) throws IOException {
+        ICsvBeanWriter csvWriter = new CsvBeanWriter(writer, CsvPreference.STANDARD_PREFERENCE);
         String[] csvHeader = {"ID", "Data", "Hora", "Quantidade", "Observações", "Status"};
         String[] inputMapping = {"id", "dataEntrada", "horaEntrada", "quantEntrada", "obsEntrada", "statusEntrada"};
         String[] outputMapping = {"id", "dataSaida", "horaSaida", "quantSaida", "obsSaida", "statusSaida"};
@@ -90,71 +110,19 @@ public class RecordService {
         csvWriter.close();
     }
 
-    //buscar por data
-    public void exportCSVLocalDate(HttpServletResponse response, LocalDate date) throws IOException {
-        response.setContentType("text/csv");
-        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
-        String currentDateTime = dateFormatter.format(new Date());
-
-        String headerKey = "Content-Disposition";
-        String headerValue = "attachment; filename=Registro_" + currentDateTime + ".csv";
-        response.setHeader(headerKey, headerValue);
-
-        List<Input> inputs = inputRepo.findByDataEntrada(date);
-        List<Output> outputs = outRepo.findByDataSaida(date);
-
-        ICsvBeanWriter csvWriter = new CsvBeanWriter(response.getWriter(), CsvPreference.STANDARD_PREFERENCE);
-        String[] csvHeader = {"ID", "Data", "Hora", "Quantidade", "Observações", "Status"};
-        String[] inputMapping = {"id", "dataEntrada", "horaEntrada", "quantEntrada", "obsEntrada", "statusEntrada"};
-        String[] outputMapping = {"id", "dataSaida", "horaSaida", "quantSaida", "obsSaida", "statusSaida"};
-
-        csvWriter.writeHeader(csvHeader);
-
-        for (Input input : inputs) {
-            csvWriter.write(input, inputMapping);
-        }
-
-        for (Output output : outputs) {
-            csvWriter.write(output, outputMapping);
-        }
-
-        csvWriter.close();
-    }
-
     //excel 
     public ResponseEntity<byte[]> exportExcel() {
         try (XSSFWorkbook workbook = new XSSFWorkbook()) {
             XSSFSheet sheet = workbook.createSheet("Registro");
-    
             List<Input> inputs = inputRepo.findAll();
             List<Output> outputs = outRepo.findAll();
+
             createHeaderRow(workbook, sheet, "ID", "Data", "Hora", "Quantidade", "Observações", "Status");
-    
-            int rowNum = 1;
-            for (Input input : inputs) {
-                XSSFRow row = sheet.createRow(rowNum++);
-                row.createCell(0).setCellValue(input.getId());
-                row.createCell(1).setCellValue(input.getDataEntrada());
-                row.createCell(2).setCellValue(input.getHoraEntrada().toString());
-                row.createCell(3).setCellValue(input.getQuantEntrada());
-                row.createCell(4).setCellValue(input.getObsEntrada());
-                row.createCell(5).setCellValue(input.getStatusEntrada());
-            }
-    
-            for (Output output : outputs) {
-                XSSFRow row = sheet.createRow(rowNum++);
-                row.createCell(0).setCellValue(output.getId());
-                row.createCell(1).setCellValue(output.getDataSaida());
-                row.createCell(2).setCellValue(output.getHoraSaida().toString());
-                row.createCell(3).setCellValue(output.getQuantSaida());
-                row.createCell(4).setCellValue(output.getObsSaida());
-                row.createCell(5).setCellValue(output.getStatusSaida());
-            }
-    
+            writeExcelData(workbook, sheet, inputs, outputs);
+
             createChart(sheet, inputs.size(), "Quantidade de Entrada");
-    
             autoSizeColumns(sheet, 6);
-    
+
             return createResponseEntity(workbook, "Registro.xlsx");
         } catch (IOException e) {
             e.printStackTrace();
@@ -162,48 +130,37 @@ public class RecordService {
         }
     }
 
-    //buscar por data 
-    public ResponseEntity<byte[]> exportExcelLocalDate(LocalDate date) {
+    public ResponseEntity<byte[]> exportExcelData(LocalDate date) {
         try (XSSFWorkbook workbook = new XSSFWorkbook()) {
             XSSFSheet sheet = workbook.createSheet("Registro");
-    
             List<Input> inputs = inputRepo.findByDataEntrada(date);
             List<Output> outputs = outRepo.findByDataSaida(date);
+
             createHeaderRow(workbook, sheet, "ID", "Data", "Hora", "Quantidade", "Observações", "Status");
-    
-            CellStyle dateCellStyle = workbook.createCellStyle();
-            CreationHelper createHelper = workbook.getCreationHelper();
-            dateCellStyle.setDataFormat(createHelper.createDataFormat().getFormat("yyyy-MM-dd"));
+            writeExcelData(workbook, sheet, inputs, outputs);
 
-            int rowNum = 1;
-            for (Input input : inputs) {
-                XSSFRow row = sheet.createRow(rowNum++);
-                row.createCell(0).setCellValue(input.getId());
-                Cell dateCell = row.createCell(1);
-                dateCell.setCellValue(input.getDataEntrada());
-                dateCell.setCellStyle(dateCellStyle);
-                row.createCell(2).setCellValue(input.getHoraEntrada().toString());
-                row.createCell(3).setCellValue(input.getQuantEntrada());
-                row.createCell(4).setCellValue(input.getObsEntrada());
-                row.createCell(5).setCellValue(input.getStatusEntrada());
-            }
-
-            for (Output output : outputs) {
-                XSSFRow row = sheet.createRow(rowNum++);
-                row.createCell(0).setCellValue(output.getId());
-                Cell dateCell = row.createCell(1);
-                dateCell.setCellValue(output.getDataSaida());
-                dateCell.setCellStyle(dateCellStyle);
-                row.createCell(2).setCellValue(output.getHoraSaida().toString());
-                row.createCell(3).setCellValue(output.getQuantSaida());
-                row.createCell(4).setCellValue(output.getObsSaida());
-                row.createCell(5).setCellValue(output.getStatusSaida());
-            }
-    
             createChart(sheet, inputs.size(), "Quantidade de Entrada");
-    
             autoSizeColumns(sheet, 6);
-    
+
+            return createResponseEntity(workbook, "Registro.xlsx");
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    public ResponseEntity<byte[]> exportExcelDataBetween(LocalDate startDate, LocalDate endDate) {
+        try (XSSFWorkbook workbook = new XSSFWorkbook()) {
+            XSSFSheet sheet = workbook.createSheet("Registro");
+            List<Input> inputs = inputRepo.findByDataEntradaBetween(startDate, endDate);
+            List<Output> outputs = outRepo.findByDataSaidaBetween(startDate, endDate);
+
+            createHeaderRow(workbook, sheet, "ID", "Data", "Hora", "Quantidade", "Observações", "Status");
+            writeExcelData(workbook, sheet, inputs, outputs);
+
+            createChart(sheet, inputs.size(), "Quantidade de Entrada");
+            autoSizeColumns(sheet, 6);
+
             return createResponseEntity(workbook, "Registro.xlsx");
         } catch (IOException e) {
             e.printStackTrace();
@@ -230,6 +187,37 @@ public class RecordService {
             cell.setCellValue(headers[i]);
             cell.setCellStyle(headerStyle);
         }
+    }
+
+    private void writeExcelData(XSSFWorkbook workbook, XSSFSheet sheet, List<Input> inputs, List<Output> outputs) {
+        int rowNum = 1;
+        CellStyle dateCellStyle = workbook.createCellStyle();
+        CreationHelper createHelper = workbook.getCreationHelper();
+        dateCellStyle.setDataFormat(createHelper.createDataFormat().getFormat("yyyy-MM-dd"));
+
+        for (Input input : inputs) {
+            XSSFRow row = sheet.createRow(rowNum++);
+            writeRowData(row, input.getId(), input.getDataEntrada(), input.getHoraEntrada().toString(),
+                        input.getQuantEntrada(), input.getObsEntrada(), input.getStatusEntrada(), dateCellStyle);
+        }
+
+        for (Output output : outputs) {
+            XSSFRow row = sheet.createRow(rowNum++);
+            writeRowData(row, output.getId(), output.getDataSaida(), output.getHoraSaida().toString(),
+                        output.getQuantSaida(), output.getObsSaida(), output.getStatusSaida(), dateCellStyle);
+        }
+    }
+
+    private void writeRowData(XSSFRow row, Long id, LocalDate date, String time, Integer quantity,
+                            String observations, String status, CellStyle dateCellStyle) {
+        row.createCell(0).setCellValue(id);
+        Cell dateCell = row.createCell(1);
+        dateCell.setCellValue(date);
+        dateCell.setCellStyle(dateCellStyle);
+        row.createCell(2).setCellValue(time);
+        row.createCell(3).setCellValue(quantity);
+        row.createCell(4).setCellValue(observations);
+        row.createCell(5).setCellValue(status);
     }
 
     private void createChart(XSSFSheet sheet, int size, String title) {
