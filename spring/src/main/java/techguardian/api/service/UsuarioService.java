@@ -7,52 +7,47 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import techguardian.api.entity.Authority;
-import techguardian.api.entity.User;
-import techguardian.api.repository.AuthorityRepository;
-import techguardian.api.repository.UserRepository;
+import techguardian.api.entity.Autorizacao;
+import techguardian.api.entity.Usuario;
+import techguardian.api.repository.AutorizacaoRepository;
+import techguardian.api.repository.UsuarioRepository;
 
 @Service
-public class UserService {
+public class UsuarioService {
 
     @Autowired
-    private UserRepository userRepo;
+    private UsuarioRepository userRepo;
 
     @Autowired
-    private AuthorityRepository authRepo;
+    private AutorizacaoRepository authRepo;
 
     @Autowired
     private PasswordEncoder encoder;
 
-    public List<User> findAll() {
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<Usuario> findAll() {
         return userRepo.findAll();
     }
 
-    // @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    public Authority findByID(Long id) {
-        Optional<Authority> authorityOp = authRepo.findById(id);
-        if(authorityOp.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Autorização não encontrada!");
-        }
-        return authorityOp.get();
-    }
-
-    // @PreAuthorize("hasRole('ADMIN')")
-    public User createUser(User user) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public Usuario createUser(Usuario user) {
         if(user == null ||
                 user.getNome() == null ||
                 user.getNome().isBlank() ||
+                user.getEmail() == null ||
+                user.getEmail().isBlank() ||
                 user.getSenha() == null ||
                 user.getSenha().isBlank()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Dados inválidos!");
         }
         if(!user.getAutorizacoes().isEmpty()) {
-            Set<Authority> authorities = new HashSet<Authority>();
-            for(Authority authority: user.getAutorizacoes()) {
+            Set<Autorizacao> authorities = new HashSet<Autorizacao>();
+            for(Autorizacao authority: user.getAutorizacoes()) {
                 authority = findByID(authority.getId());
                 authorities.add(authority);
             }
@@ -62,8 +57,9 @@ public class UserService {
         return userRepo.save(user);
     }
 
-    public User updateUser(Long id, User user) {
-        User existUser = userRepo.findById(id)
+    @PreAuthorize("hasrole('ADMIN')")
+    public Usuario updateUser(Long id, Usuario user) {
+        Usuario existUser = userRepo.findById(id)
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado - ID: " + id));
         if (user.getNome() != null) {
             existUser.setNome(user.getNome());
@@ -71,13 +67,26 @@ public class UserService {
         if (user.getSenha() != null) {
             existUser.setSenha(user.getSenha());
         }
+        if (user.getEmail() != null) {
+            existUser.setEmail(user.getEmail());
+        }
         return userRepo.save(user);
     }
 
-    public User deleteUser(Long id) {
-        User user = userRepo.findById(id)
+    @PreAuthorize("hasrole('ADMIN')")
+    public Usuario deleteUser(Long id) {
+        Usuario user = userRepo.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado - ID: " + id));
         userRepo.deleteById(id);
         return user;
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    public Autorizacao findByID(Long id) {
+        Optional<Autorizacao> authorityOp = authRepo.findById(id);
+        if(authorityOp.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Autorização não encontrada!");
+        }
+        return authorityOp.get();
     }
 }
