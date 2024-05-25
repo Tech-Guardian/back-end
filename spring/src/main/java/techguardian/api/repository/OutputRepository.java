@@ -1,6 +1,5 @@
 package techguardian.api.repository;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,7 +10,9 @@ import techguardian.api.entity.Output;
 @Repository
 public interface OutputRepository extends JpaRepository<Output, Long>{
 
-    List<Output> findByDataSaida(LocalDate dataSaida);
+    List<Output> findByDataSaida(String dataSaida);
 
-    List<Output> findByDataSaidaBetween(LocalDate startDate, LocalDate endDate);
+    List<Output> findByDataSaidaBetween(String startDate, String endDate);
+
+    List<Output> findByDataSaidaAndHoraSaidaBetween(String dataSaida, String startTime, String endTime);
 }

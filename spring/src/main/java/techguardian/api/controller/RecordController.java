@@ -1,10 +1,8 @@
 package techguardian.api.controller;
 
 import java.io.IOException;
-import java.time.LocalDate;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,14 +25,17 @@ public class RecordController {
     }
 
     @GetMapping("/date-csv")
-    public void exportCSVData(@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date, HttpServletResponse response) throws IOException {
+    public void exportCSVData(@RequestParam("date") String date, HttpServletResponse response) throws IOException {
         recordService.exportCSVData(response, date);
     }
 
+    @GetMapping("/hour-csv")
+    public void exportCSVHour(@RequestParam("date") String date, @RequestParam("startTime") String startTime, @RequestParam("endTime") String endTime, HttpServletResponse response) throws IOException {
+        recordService.exportCSVHour(response, date, startTime, endTime);
+    }
+
     @GetMapping("/dates-csv")
-    public void exportCSVDataBetween(@RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-                        @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
-                        HttpServletResponse response) throws IOException {
+    public void exportCSVDataBetween(@RequestParam("startDate") String startDate, @RequestParam("endDate") String endDate, HttpServletResponse response) throws IOException {
         recordService.exportCSVDataBetween(response, startDate, endDate);
     }
 
@@ -44,13 +45,17 @@ public class RecordController {
     }
 
     @GetMapping("/date-excel")
-    public ResponseEntity<byte[]> exportExcelData(@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+    public ResponseEntity<byte[]> exportExcelData(@RequestParam("date") String date) {
         return recordService.exportExcelData(date);
     }
 
+    @GetMapping("/hour-excel")
+    public ResponseEntity<byte[]> exportExcelHour(@RequestParam("date") String date, @RequestParam("startTime") String startTime, @RequestParam("endTime") String endTime) {
+        return recordService.exportExcelHour(date, startTime, endTime);
+    }
+
     @GetMapping("/dates-excel")
-    public ResponseEntity<byte[]> exportExcelDataBetween(@RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-                                            @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+    public ResponseEntity<byte[]> exportExcelDataBetween(@RequestParam("startDate") String startDate, @RequestParam("endDate") String endDate) {
         return recordService.exportExcelDataBetween(startDate, endDate);
     }
 }

@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
 
@@ -68,14 +68,29 @@ public class RecordService {
         writeCSVData(response.getWriter(), listInput, listOutput);
     }
 
-    public void exportCSVData(HttpServletResponse response, LocalDate date) throws IOException {
+    public void exportCSVData(HttpServletResponse response, String date) throws IOException {
         setupCSVResponse(response);
         List<Input> listInput = inputRepo.findByDataEntrada(date);
         List<Output> listOutput = outRepo.findByDataSaida(date);
         writeCSVData(response.getWriter(), listInput, listOutput);
     }
 
-    public void exportCSVDataBetween(HttpServletResponse response, LocalDate startDate, LocalDate endDate) throws IOException {
+    public void exportCSVHour(HttpServletResponse response, String date, String startTime, String endTime) throws IOException {
+        setupCSVResponse(response);
+
+        LocalTime start = LocalTime.parse(startTime);
+        LocalTime end = LocalTime.parse(endTime);
+        end = end.plusMinutes(1);
+
+        startTime = start.toString();
+        endTime = end.toString();
+
+        List<Input> listInput = inputRepo.findByDataEntradaAndHoraEntradaBetween(date, startTime, endTime);
+        List<Output> listOutput = outRepo.findByDataSaidaAndHoraSaidaBetween(date, startTime, endTime);
+        writeCSVData(response.getWriter(), listInput, listOutput);
+    }
+
+    public void exportCSVDataBetween(HttpServletResponse response, String startDate, String endDate) throws IOException {
         setupCSVResponse(response);
         List<Input> listInput = inputRepo.findByDataEntradaBetween(startDate, endDate);
         List<Output> listOutput = outRepo.findByDataSaidaBetween(startDate, endDate);
@@ -130,7 +145,7 @@ public class RecordService {
         }
     }
 
-    public ResponseEntity<byte[]> exportExcelData(LocalDate date) {
+    public ResponseEntity<byte[]> exportExcelData(String date) {
         try (XSSFWorkbook workbook = new XSSFWorkbook()) {
             XSSFSheet sheet = workbook.createSheet("Registro");
             List<Input> inputs = inputRepo.findByDataEntrada(date);
@@ -149,7 +164,34 @@ public class RecordService {
         }
     }
 
-    public ResponseEntity<byte[]> exportExcelDataBetween(LocalDate startDate, LocalDate endDate) {
+    public ResponseEntity<byte[]> exportExcelHour(String date, String startTime, String endTime) {
+        try (XSSFWorkbook workbook = new XSSFWorkbook()) {
+            XSSFSheet sheet = workbook.createSheet("Registro");
+    
+            LocalTime start = LocalTime.parse(startTime);
+            LocalTime end = LocalTime.parse(endTime);
+    
+            end = end.plusMinutes(1);
+    
+            startTime = start.toString();
+            endTime = end.toString();
+            List<Input> inputs = inputRepo.findByDataEntradaAndHoraEntradaBetween(date, startTime, endTime);
+            List<Output> outputs = outRepo.findByDataSaidaAndHoraSaidaBetween(date, startTime, endTime);
+
+            createHeaderRow(workbook, sheet, "ID", "Data", "Hora", "Quantidade", "Observações", "Status");
+            writeExcelData(workbook, sheet, inputs, outputs);
+
+            createChart(sheet, inputs.size(), "Quantidade de Entrada");
+            autoSizeColumns(sheet, 6);
+
+            return createResponseEntity(workbook, "Registro.xlsx");
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    public ResponseEntity<byte[]> exportExcelDataBetween(String startDate, String endDate) {
         try (XSSFWorkbook workbook = new XSSFWorkbook()) {
             XSSFSheet sheet = workbook.createSheet("Registro");
             List<Input> inputs = inputRepo.findByDataEntradaBetween(startDate, endDate);
@@ -208,7 +250,7 @@ public class RecordService {
         }
     }
 
-    private void writeRowData(XSSFRow row, Long id, LocalDate date, String time, Integer quantity,
+    private void writeRowData(XSSFRow row, Long id, String date, String time, Integer quantity,
                             String observations, String status, CellStyle dateCellStyle) {
         row.createCell(0).setCellValue(id);
         Cell dateCell = row.createCell(1);
