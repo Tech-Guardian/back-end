@@ -57,7 +57,7 @@ public class UsuarioService {
         return userRepo.save(user);
     }
 
-    @PreAuthorize("hasrole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public Usuario updateUser(Long id, Usuario user) {
         Usuario existUser = userRepo.findById(id)
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado - ID: " + id));
@@ -70,10 +70,10 @@ public class UsuarioService {
         if (user.getEmail() != null) {
             existUser.setEmail(user.getEmail());
         }
-        return userRepo.save(user);
+        return userRepo.save(existUser);
     }
 
-    @PreAuthorize("hasrole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public Usuario deleteUser(Long id) {
         Usuario user = userRepo.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado - ID: " + id));
@@ -81,7 +81,7 @@ public class UsuarioService {
         return user;
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public Autorizacao findByID(Long id) {
         Optional<Autorizacao> authorityOp = authRepo.findById(id);
         if(authorityOp.isEmpty()) {

@@ -33,7 +33,7 @@ public class UsuarioController {
         return userService.createUser(user);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/usuario/{id}")
     public ResponseEntity<Usuario> updateUser(@PathVariable("id") Long id, @RequestBody Usuario user) {
         Usuario updatedUserEntity = userService.updateUser(id, user);
         if (updatedUserEntity != null) {
@@ -43,7 +43,7 @@ public class UsuarioController {
         }
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/usuario/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable("id") long id) {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
