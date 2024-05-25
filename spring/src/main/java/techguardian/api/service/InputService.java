@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.server.ResponseStatusException;
@@ -17,10 +18,12 @@ public class InputService {
     @Autowired
     private InputRepository inputRepo;
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public List<Input> findAll() {
         return inputRepo.findAll();
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public Input createInput(Input createdInput) {
         Input input = new Input();
         input.setDataEntrada(createdInput.getDataEntrada());
@@ -32,6 +35,7 @@ public class InputService {
         return inputRepo.save(input);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public Input updateInput(Long id, Input updatedInput) {
         Input existInput = inputRepo.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Entrada não encontrada - ID: " + id));
@@ -59,6 +63,7 @@ public class InputService {
     return inputRepo.save(existInput);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public Input deleteInput(Long id) {
         Input input = inputRepo.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado - ID: " + id));

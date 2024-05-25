@@ -14,8 +14,8 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "usuario")
-public class User {
+@Table(name = "usr_usuario")
+public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,6 +25,9 @@ public class User {
     @Column(name = "usr_nome")
     private String nome;
 
+    @Column(name = "usr_email")
+    private String email;
+
     @Column(name = "usr_senha")
     private String senha;
 
@@ -33,11 +36,15 @@ public class User {
         joinColumns = { @JoinColumn(name = "usr_id")},
         inverseJoinColumns = { @JoinColumn(name = "aut_id") }
         )
-    private Set<Authority> autorizacoes = new HashSet<Authority>();
+    private Set<Autorizacao> autorizacoes = new HashSet<Autorizacao>();
 
-    public User(Long id, String nome, String senha) {
+    public Usuario() {
+    }
+
+    public Usuario(Long id, String nome, String email, String senha) {
         this.id = id;
         this.nome = nome;
+        this.email = email;
         this.senha = senha;
     }
 
@@ -57,6 +64,14 @@ public class User {
         this.nome = nome;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     public String getSenha() {
         return senha;
     }
@@ -65,11 +80,11 @@ public class User {
         this.senha = senha;
     }
 
-    public Set<Authority> getAutorizacoes() {
+    public Set<Autorizacao> getAutorizacoes() {
         return autorizacoes;
     }
 
-    public void setAutorizacoes(Set<Authority> autorizacoes) {
+    public void setAutorizacoes(Set<Autorizacao> autorizacoes) {
         this.autorizacoes = autorizacoes;
     }
 
