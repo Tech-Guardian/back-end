@@ -29,7 +29,7 @@ public class InputService {
         input.setDataEntrada(createdInput.getDataEntrada());
         input.setHoraEntrada(createdInput.getHoraEntrada());
         input.setQuantEntrada(createdInput.getQuantEntrada());
-        input.setStatus(createdInput.getStatus());
+        input.setStatusEntrada(createdInput.getStatusEntrada());
         input.setObsEntrada(createdInput.getObsEntrada());
 
         return inputRepo.save(input);
@@ -52,12 +52,12 @@ public class InputService {
         existInput.setQuantEntrada(updatedInput.getQuantEntrada());
     }
 
-    if (!ObjectUtils.isEmpty(updatedInput.getStatus())) {
-        existInput.setStatus(updatedInput.getStatus());
+    if (!ObjectUtils.isEmpty(updatedInput.getStatusEntrada())) {
+        existInput.setStatusEntrada(updatedInput.getStatusEntrada());
     }
 
     if (!ObjectUtils.isEmpty(updatedInput.getObsEntrada())) {
-        existInput.setStatus(updatedInput.getObsEntrada());
+        existInput.setObsEntrada(updatedInput.getObsEntrada());
     }
 
     return inputRepo.save(existInput);
