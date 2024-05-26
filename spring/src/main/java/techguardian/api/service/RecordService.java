@@ -41,6 +41,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.supercsv.io.CsvBeanWriter;
 import org.supercsv.io.ICsvBeanWriter;
@@ -61,6 +62,7 @@ public class RecordService {
     @Autowired
     private OutputRepository outRepo;
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER', 'GLOBAL')")
     public void exportCSV(HttpServletResponse response) throws IOException {
         setupCSVResponse(response);
         List<Input> listInput = inputRepo.findAll();
@@ -68,6 +70,7 @@ public class RecordService {
         writeCSVData(response.getWriter(), listInput, listOutput);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER', 'GLOBAL')")
     public void exportCSVData(HttpServletResponse response, String date) throws IOException {
         setupCSVResponse(response);
         List<Input> listInput = inputRepo.findByDataEntrada(date);
@@ -75,6 +78,7 @@ public class RecordService {
         writeCSVData(response.getWriter(), listInput, listOutput);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER', 'GLOBAL')")
     public void exportCSVHour(HttpServletResponse response, String date, String startTime, String endTime) throws IOException {
         setupCSVResponse(response);
 
@@ -90,6 +94,7 @@ public class RecordService {
         writeCSVData(response.getWriter(), listInput, listOutput);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER', 'GLOBAL')")
     public void exportCSVDataBetween(HttpServletResponse response, String startDate, String endDate) throws IOException {
         setupCSVResponse(response);
         List<Input> listInput = inputRepo.findByDataEntradaBetween(startDate, endDate);
@@ -126,6 +131,7 @@ public class RecordService {
     }
 
     //excel 
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER', 'GLOBAL')")
     public ResponseEntity<byte[]> exportExcel() {
         try (XSSFWorkbook workbook = new XSSFWorkbook()) {
             XSSFSheet sheet = workbook.createSheet("Registro");
@@ -145,6 +151,7 @@ public class RecordService {
         }
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER', 'GLOBAL')")
     public ResponseEntity<byte[]> exportExcelData(String date) {
         try (XSSFWorkbook workbook = new XSSFWorkbook()) {
             XSSFSheet sheet = workbook.createSheet("Registro");
@@ -164,6 +171,7 @@ public class RecordService {
         }
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER', 'GLOBAL')")
     public ResponseEntity<byte[]> exportExcelHour(String date, String startTime, String endTime) {
         try (XSSFWorkbook workbook = new XSSFWorkbook()) {
             XSSFSheet sheet = workbook.createSheet("Registro");
@@ -191,6 +199,7 @@ public class RecordService {
         }
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER', 'GLOBAL')")
     public ResponseEntity<byte[]> exportExcelDataBetween(String startDate, String endDate) {
         try (XSSFWorkbook workbook = new XSSFWorkbook()) {
             XSSFSheet sheet = workbook.createSheet("Registro");
