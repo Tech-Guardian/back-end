@@ -14,8 +14,8 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "autorizacao")
-public class Authority {
+@Table(name = "aut_autorizacao")
+public class Autorizacao {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,7 +27,7 @@ public class Authority {
 
     @JsonIgnore
     @ManyToMany(mappedBy = "autorizacoes")
-    private Set<User> usuarios = new HashSet<User>();
+    private Set<Usuario> usuarios = new HashSet<Usuario>();
 
     public Long getId() {
         return id;
@@ -45,11 +45,11 @@ public class Authority {
         this.nome = nome;
     }
 
-    public Set<User> getUsuarios() {
+    public Set<Usuario> getUsuarios() {
         return usuarios;
     }
 
-    public void setUsuarios(Set<User> usuarios) {
+    public void setUsuarios(Set<Usuario> usuarios) {
         this.usuarios = usuarios;
     }
 

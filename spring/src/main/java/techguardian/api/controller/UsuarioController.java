@@ -13,29 +13,29 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import techguardian.api.entity.User;
-import techguardian.api.service.UserService;
+import techguardian.api.entity.Usuario;
+import techguardian.api.service.UsuarioService;
 
 @RestController
 @CrossOrigin
-public class UserController {
+public class UsuarioController {
 
     @Autowired
-    private UserService userService;
+    private UsuarioService userService;
 
     @GetMapping("/usuarios")
-    public List<User> findAll() {
+    public List<Usuario> findAll() {
         return userService.findAll();
     }
 
     @PostMapping("/cadastro")
-    public User createUser(@RequestBody User user) {
+    public Usuario createUser(@RequestBody Usuario user) {
         return userService.createUser(user);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable("id") Long id, @RequestBody User user) {
-        User updatedUserEntity = userService.updateUser(id, user);
+    @PutMapping("/usuario/{id}")
+    public ResponseEntity<Usuario> updateUser(@PathVariable("id") Long id, @RequestBody Usuario user) {
+        Usuario updatedUserEntity = userService.updateUser(id, user);
         if (updatedUserEntity != null) {
             return ResponseEntity.ok(updatedUserEntity);
         } else {
@@ -43,7 +43,7 @@ public class UserController {
         }
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/usuario/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable("id") long id) {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
