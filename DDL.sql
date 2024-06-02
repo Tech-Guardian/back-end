@@ -61,8 +61,6 @@ insert into usr_usuario (usr_nome, usr_email, usr_senha)
     values ('admin', 'admin@admin', '$2a$10$i3.Z8Yv1Fwl0I5SNjdCGkOTRGQjGvHjh/gMZhdc3e7LIovAklqM6C'),
     ('user','user@user', '$2a$10$8Cye0s.CHRQD9PddqA/cEuhJlp.vTXwXrKKXMlT73S6.T0JYZc.wK');
 insert into aut_autorizacao (aut_nome)
-    values ('ROLE_ADMIN'),
-    ('ROLE_USER');
+    values ('ADMIN'), ('USER'), ('GLOBAL');
 insert into uau_usuario_autorizacao (usr_id, aut_id) 
-    values (1, 1),
-    (2, 2);
+    values (1, 1), (2, 2), (3, 3);

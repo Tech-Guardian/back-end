@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -30,6 +32,10 @@ public class Output {
 
     @Column(name = "obs_saida")
     private String obsSaida;
+
+    @ManyToOne
+    @JoinColumn(name = "redZ_id")
+    private RedZone redZone;
 
     public Long getId() {
         return id;
@@ -77,6 +83,14 @@ public class Output {
 
     public void setObsSaida(String obsSaida) {
         this.obsSaida = obsSaida;
+    }
+
+    public RedZone getRedZone() {
+        return redZone;
+    }
+
+    public void setRedZone(RedZone redZone) {
+        this.redZone = redZone;
     }
 
 }
