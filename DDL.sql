@@ -59,10 +59,9 @@ insert into registro_saida (sai_id, data_saida, hora_saida, quant_saida, status_
 
 insert into usr_usuario (usr_nome, usr_email, usr_senha)
     values ('admin', 'admin@admin', '$2a$10$i3.Z8Yv1Fwl0I5SNjdCGkOTRGQjGvHjh/gMZhdc3e7LIovAklqM6C'),
-    ('user','user@user', '$2a$10$8Cye0s.CHRQD9PddqA/cEuhJlp.vTXwXrKKXMlT73S6.T0JYZc.wK');
+    ('user','user@user', '$2a$10$fhYO./fedFYDYUBNW8GtruUcSgM/gTz2batKz4j7wHf7l5FCQO2ne'),
+    ('global', 'global@global', '$2a$10$0BAVpR/9/YJR2C9EPPMRxOXS9il/lt2IV7RFDFE2.Z/WziI3JT9zO');
 insert into aut_autorizacao (aut_nome)
-    values ('ROLE_ADMIN'),
-    ('ROLE_USER');
+    values ('ROLE_ADMIN'), ('ROLE_USER'), ('ROLE_GLOBAL');
 insert into uau_usuario_autorizacao (usr_id, aut_id) 
-    values (1, 1),
-    (2, 2);
+    values (1, 1), (2, 2), (3, 3);
