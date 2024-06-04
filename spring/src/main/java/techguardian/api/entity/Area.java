@@ -5,7 +5,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -19,10 +18,6 @@ public class Area {
 
     @Column(name = "name")
     private String name;
-
-    @ManyToOne
-    @Column(name = "usr_id")
-    private Usuario usuario;
 
     public Long getId() {
         return id;
@@ -39,12 +34,5 @@ public class Area {
     public void setName(String name) {
         this.name = name;
     }
-
-    public Usuario getUsuario() {
-        return usuario;
-    }
-
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
-    }
+    
 }

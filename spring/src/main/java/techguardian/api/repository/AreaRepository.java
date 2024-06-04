@@ -8,4 +8,5 @@ import techguardian.api.entity.Area;
 @Repository
 public interface AreaRepository extends JpaRepository<Area, Long>{
 
+    Area findAreaByName(String name);
 }

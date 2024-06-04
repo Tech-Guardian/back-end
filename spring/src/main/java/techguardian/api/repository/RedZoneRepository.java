@@ -8,4 +8,5 @@ import techguardian.api.entity.RedZone;
 @Repository
 public interface RedZoneRepository extends JpaRepository<RedZone, Long>{
 
+    RedZone findRedZoneByName(String name);
 }

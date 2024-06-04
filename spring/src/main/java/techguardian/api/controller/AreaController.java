@@ -27,18 +27,24 @@ public class AreaController {
         return areaService.findAll();
     }
 
+    @GetMapping("/area/{name}") 
+    public Area getAreaByName(@PathVariable String name) {
+        return areaService.findAreaByName(name);
+    }
+
     @PostMapping("/area")
     public Area createArea(@RequestBody Area createdArea) {
         return areaService.createArea(createdArea);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/area/{id}")
     public Area updateArea(@PathVariable Long id, @RequestBody Area updatedArea) {
         return areaService.updateArea(id, updatedArea);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/area/{id}")
     public Area deleteArea(@PathVariable Long id) {
         return areaService.deleteArea(id);
     }
+
 }

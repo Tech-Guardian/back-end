@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -22,12 +21,14 @@ public class RedZoneService {
     @Autowired
     private AreaRepository areaRepo;
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public List<RedZone> findAll() {
         return redZRepo.findAll();
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    public RedZone findRedZoneByName(String name) {
+        return redZRepo.findRedZoneByName(name);  
+    }
+
     public RedZone createRedZone(RedZone createdRedZone) {
         RedZone redZone = new RedZone();
         redZone.setName(createdRedZone.getName());
@@ -41,7 +42,6 @@ public class RedZoneService {
         return redZRepo.save(redZone);
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public RedZone updateRedZone(Long id, RedZone updatedRedZone) {
         RedZone redZone = redZRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("RedZone não encontrada" + id));
@@ -56,7 +56,6 @@ public class RedZoneService {
         return redZRepo.save(redZone);
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public RedZone deleteRedZone(Long id) {
         RedZone redZone = redZRepo.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Redzone não encontrada - ID: " + id));

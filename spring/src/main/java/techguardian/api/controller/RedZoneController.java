@@ -27,17 +27,22 @@ public class RedZoneController {
         return redZService.findAll();
     }
 
+    @GetMapping("/redzone/{name}") 
+    public RedZone getRedZoneByName(@PathVariable String name) {
+        return redZService.findRedZoneByName(name);
+    }
+
     @PostMapping("/redzone")
     public RedZone createRedZone(@RequestBody RedZone createdRedZone) {
         return redZService.createRedZone(createdRedZone);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/redzone/{id}")
     public RedZone updateRedZone(@PathVariable Long id, @RequestBody RedZone updatedRedZone) {
         return redZService.updateRedZone(id, updatedRedZone);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/redzone/{id}")
     public RedZone deleteRedZone(@PathVariable Long id) {
         return redZService.deleteRedZone(id);
     }
