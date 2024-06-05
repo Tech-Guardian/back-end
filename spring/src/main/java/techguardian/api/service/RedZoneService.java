@@ -31,12 +31,13 @@ public class RedZoneService {
 
     public RedZone createRedZone(RedZone createdRedZone) {
         RedZone redZone = new RedZone();
+
         redZone.setName(createdRedZone.getName());
-        redZone.setCamIp(createdRedZone.getCamIp());
+        redZone.setCamIp(addCamIp(null, createdRedZone.getCamIp()));
         redZone.setArea(createdRedZone.getArea());
 
         Area area = areaRepo.findById(redZone.getArea().getId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Area não encontrada - ID" + redZone.getArea().getId()));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Área não encontrada - ID: " + redZone.getArea().getId()));
         redZone.setArea(area);
 
         return redZRepo.save(redZone);
@@ -44,10 +45,10 @@ public class RedZoneService {
 
     public RedZone updateRedZone(Long id, RedZone updatedRedZone) {
         RedZone redZone = redZRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("RedZone não encontrada" + id));
+                .orElseThrow(() -> new RuntimeException("RedZone não encontrada - ID: " + id));
 
         redZone.setName(updatedRedZone.getName());
-        redZone.setCamIp(updatedRedZone.getCamIp());
+        redZone.setCamIp(addCamIp(redZone.getCamIp(), updatedRedZone.getCamIp()));
 
         Area area = areaRepo.findById(updatedRedZone.getArea().getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Área não encontrada - ID: " + updatedRedZone.getArea().getId()));
@@ -61,5 +62,13 @@ public class RedZoneService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Redzone não encontrada - ID: " + id));
         redZRepo.deleteById(id);
         return redZone;
+    }
+
+    private String addCamIp(String existingCamIp, String newCamIp) {
+        if (existingCamIp == null || existingCamIp.isEmpty()) {
+            return newCamIp;
+        } else {
+            return existingCamIp + ";" + newCamIp;
+        }
     }
 }
