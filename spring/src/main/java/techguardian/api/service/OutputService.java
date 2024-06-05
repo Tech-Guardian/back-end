@@ -31,6 +31,7 @@ public class OutputService {
         output.setQuantSaida(createdOutput.getQuantSaida());
         output.setStatusSaida(createdOutput.getStatusSaida());
         output.setObsSaida(createdOutput.getObsSaida());
+        output.setRedZone(createdOutput.getRedZone());
 
         return outRepo.save(output);
     }
@@ -58,6 +59,10 @@ public class OutputService {
     
     if (!ObjectUtils.isEmpty(updatedOutput.getObsSaida())) {
         existOutput.setObsSaida(updatedOutput.getObsSaida());    
+    }
+
+    if (!ObjectUtils.isEmpty(updatedOutput.getRedZone())) {
+        existOutput.setRedZone(updatedOutput.getRedZone());    
     }
 
     return outRepo.save(existOutput);

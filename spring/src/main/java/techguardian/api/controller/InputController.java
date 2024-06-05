@@ -1,11 +1,8 @@
 package techguardian.api.controller;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,21 +33,14 @@ public class InputController {
     }
 
     @PutMapping("/entrada/{id}")
-    public ResponseEntity<Input> updateInput(@PathVariable Long id, @RequestBody Input input) {
+    public Input updateInput(@PathVariable Long id, @RequestBody Input input) {
         Input updatedInput = inputService.updateInput(id, input);
-        return ResponseEntity.ok(updatedInput);
+        return inputService.createInput(updatedInput);
     }
-    
+
     @DeleteMapping("/entrada/{id}")
-    public ResponseEntity<String> deleteInput(@PathVariable Long id) {
-        try {
-            inputService.deleteInput(id);
-            return ResponseEntity.ok("Entrada com o ID " + id + " foi deletada com sucesso.");
-        } catch (NoSuchElementException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ocorreu um erro ao deletar a entrada.");
-        }
+    public Input deleteInput(@PathVariable Long id) {
+        return inputService.deleteInput(id);
     }
 
 }

@@ -31,6 +31,7 @@ public class InputService {
         input.setQuantEntrada(createdInput.getQuantEntrada());
         input.setStatusEntrada(createdInput.getStatusEntrada());
         input.setObsEntrada(createdInput.getObsEntrada());
+        input.setRedZone(createdInput.getRedZone());
 
         return inputRepo.save(input);
     }
@@ -60,13 +61,17 @@ public class InputService {
         existInput.setObsEntrada(updatedInput.getObsEntrada());
     }
 
+    if (!ObjectUtils.isEmpty(updatedInput.getRedZone())) {
+        existInput.setRedZone(updatedInput.getRedZone());
+    }
+
     return inputRepo.save(existInput);
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public Input deleteInput(Long id) {
         Input input = inputRepo.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado - ID: " + id));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Entrada não encontrada - ID: " + id));
         inputRepo.deleteById(id);
         return input;
     }

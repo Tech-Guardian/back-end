@@ -1,11 +1,8 @@
 package techguardian.api.controller;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,20 +33,13 @@ public class OutputController {
     }
 
     @PutMapping("/saida/{id}")
-    public ResponseEntity<Output> updateOutput(@PathVariable Long id, @RequestBody Output output) {
+    public Output updateOutput(@PathVariable Long id, @RequestBody Output output) {
         Output updatedOutput = outService.updateOutput(id, output);
-        return ResponseEntity.ok(updatedOutput);
+        return outService.createOutput(updatedOutput);
     }
 
     @DeleteMapping("/saida/{id}")
-    public ResponseEntity<String> deleteOutput(@PathVariable Long id) {
-        try {
-            outService.deleteOutput(id);
-            return ResponseEntity.ok("Saida com o ID " + id + " foi deletada com sucesso.");
-        } catch (NoSuchElementException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ocorreu um erro ao deletar a saida.");
-        }
+    public Output delteOutput(@PathVariable Long id) {
+        return outService.deleteOutput(id);
     }
 }
