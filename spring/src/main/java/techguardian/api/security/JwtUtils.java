@@ -1,7 +1,7 @@
 package techguardian.api.security;
 
+import java.security.Key;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,6 +21,7 @@ import io.jsonwebtoken.security.Keys;
 public class JwtUtils {
 
     private static final String KEY = "br.gov.sp.fatec.springbootexample";
+    private static final Key SIGNING_KEY = Keys.hmacShaKeyFor(KEY.getBytes());
     
     public static String generateToken(Authentication usuario) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
@@ -34,14 +35,13 @@ public class JwtUtils {
             usuarioSemSenha.setAuthorities(autorizacoes);
         }
         String usuarioJson = mapper.writeValueAsString(usuarioSemSenha);
-        Date agora = new Date();
-        Long hora = 1000L * 60L * 60L; // Uma hora
         return Jwts.builder()
             .claim("userDetails", usuarioJson)
             .setIssuer("br.gov.sp.fatec")
             .setSubject(usuario.getName())
-            .setExpiration(new Date(agora.getTime() + hora))
-            .signWith(Keys.hmacShaKeyFor(KEY.getBytes()), SignatureAlgorithm.HS256).compact();
+            //.setExpiration(new Date(agora.getTime() + hora))
+            .signWith(SIGNING_KEY, SignatureAlgorithm.HS256)
+            .compact();
     }
 
     public static Authentication parseToken(String token)
