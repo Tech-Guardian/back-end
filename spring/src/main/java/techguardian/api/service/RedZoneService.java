@@ -31,18 +31,18 @@ public class RedZoneService {
 
     public RedZone createRedZone(RedZone createdRedZone) {
         RedZone redZone = new RedZone();
-
+    
         redZone.setName(createdRedZone.getName());
         redZone.setCamIp(addCamIp(null, createdRedZone.getCamIp()));
-        redZone.setArea(createdRedZone.getArea());
-
-        Area area = areaRepo.findById(redZone.getArea().getId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Área não encontrada - ID: " + redZone.getArea().getId()));
-        redZone.setArea(area);
-
+        
+        if (createdRedZone.getArea() != null) {
+            Area area = areaRepo.findById(createdRedZone.getArea().getId())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Área não encontrada - ID: " + createdRedZone.getArea().getId()));
+            redZone.setArea(area);
+        }
+    
         return redZRepo.save(redZone);
     }
-
     public RedZone updateRedZone(Long id, RedZone updatedRedZone) {
         RedZone redZone = redZRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("RedZone não encontrada - ID: " + id));
