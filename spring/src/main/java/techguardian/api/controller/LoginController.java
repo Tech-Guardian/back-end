@@ -26,9 +26,21 @@ public class LoginController {
 
     @PostMapping
     public Login autenticar(@RequestBody Login login) throws JsonProcessingException {
+        // Adiciona log para verificar os dados recebidos
+        System.out.println("Email recebido: " + login.getUserEmail());
+        System.out.println("Senha recebida: " + login.getPassword());
+    
         Authentication auth = new UsernamePasswordAuthenticationToken(login.getUserEmail(),
                 login.getPassword());
+    
+        // Adiciona log para verificar se a autenticação está sendo chamada
+        System.out.println("Chamando autenticação...");
+    
         auth = authManager.authenticate(auth);
+    
+        // Adiciona log para verificar se a autenticação foi bem-sucedida
+        System.out.println("Autenticação bem-sucedida.");
+    
         login.setToken(JwtUtils.generateToken(auth));
         return login;
     }

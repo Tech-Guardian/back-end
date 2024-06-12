@@ -32,3 +32,10 @@ build/
 ### VS Code ###
 .vscode/
 spring/src/main/resources/application.properties
+
+# Arquivos a serem ignorados com nome contendo "copy"
+*copy*
+
+# Arquivos específicos a serem ignorados
+graphic_sai.py
+graphic_ent.py
