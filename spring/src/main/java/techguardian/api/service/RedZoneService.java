@@ -64,11 +64,18 @@ public class RedZoneService {
         return redZone;
     }
 
-    private String addCamIp(String existingCamIp, String newCamIp) {
+    public String addCamIp(String existingCamIp, String newCamIp) {
         if (existingCamIp == null || existingCamIp.isEmpty()) {
             return newCamIp;
         } else {
             return existingCamIp + ";" + newCamIp;
         }
+    }
+
+    public RedZone addRestrictDate(Long id, String restrictDate) {
+        RedZone redZone = redZRepo.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "RedZone não encontrada - ID: " + id));
+        redZone.setRestrictDate(restrictDate);
+        return redZRepo.save(redZone);
     }
 }

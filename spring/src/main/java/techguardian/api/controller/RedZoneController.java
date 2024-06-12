@@ -3,6 +3,7 @@ package techguardian.api.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,5 +46,11 @@ public class RedZoneController {
     @DeleteMapping("/redzone/{id}")
     public RedZone deleteRedZone(@PathVariable Long id) {
         return redZService.deleteRedZone(id);
+    }
+
+    @PostMapping("/redzone/{id}/restrict-date")
+    public ResponseEntity<RedZone> addRestrictDate(@PathVariable Long id, @RequestBody RedZone restrictDate) {
+        RedZone updatedRedZone = redZService.addRestrictDate(id, restrictDate.getRestrictDate());
+        return ResponseEntity.ok(updatedRedZone);
     }
 }

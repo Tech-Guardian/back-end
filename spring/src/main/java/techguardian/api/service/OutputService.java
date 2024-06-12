@@ -10,13 +10,18 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.server.ResponseStatusException;
 
 import techguardian.api.entity.Output;
+import techguardian.api.entity.RedZone;
 import techguardian.api.repository.OutputRepository;
+import techguardian.api.repository.RedZoneRepository;
 
 @Service
 public class OutputService {
 
     @Autowired
     private OutputRepository outRepo;
+
+    @Autowired
+    private RedZoneRepository redZRepo;
 
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public List<Output> findAll() {
@@ -31,7 +36,16 @@ public class OutputService {
         output.setQuantSaida(createdOutput.getQuantSaida());
         output.setStatusSaida(createdOutput.getStatusSaida());
         output.setObsSaida(createdOutput.getObsSaida());
-        output.setRedZone(createdOutput.getRedZone());
+
+        if (createdOutput.getRedZone() != null) {
+            RedZone redZone = redZRepo.findById(createdOutput.getRedZone().getId())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "RedZone não encontrada - ID: " + createdOutput.getRedZone().getId()));
+            output.setRedZone(redZone);
+
+            if (redZone.getRestrictDate() != null && redZone.getRestrictDate().equals(createdOutput.getDataSaida())) {
+                output.setObsSaida("Alerta: Saída em um dia não autorizado.");
+            }
+        }
 
         return outRepo.save(output);
     }
@@ -62,7 +76,9 @@ public class OutputService {
     }
 
     if (!ObjectUtils.isEmpty(updatedOutput.getRedZone())) {
-        existOutput.setRedZone(updatedOutput.getRedZone());    
+        RedZone redZone = redZRepo.findById(updatedOutput.getRedZone().getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "RedZone não encontrada - ID: " + existOutput.getRedZone().getId()));
+        existOutput.setRedZone(redZone);
     }
 
     return outRepo.save(existOutput);

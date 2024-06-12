@@ -24,6 +24,9 @@ public class RedZone {
     @Column(name = "cam")
     private String camIp;
 
+    @Column(name = "restrict_date")
+    private String restrictDate;
+
     @ManyToOne
     @JoinColumn(name = "area_id")
     private Area area;
@@ -50,6 +53,14 @@ public class RedZone {
 
     public void setCamIp(String camIp) {
         this.camIp = camIp;
+    }
+
+    public String getRestrictDate() {
+        return restrictDate;
+    }
+
+    public void setRestrictDate(String restrictDate) {
+        this.restrictDate = restrictDate;
     }
 
     public Area getArea() {
