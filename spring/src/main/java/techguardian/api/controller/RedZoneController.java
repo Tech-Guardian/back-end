@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import techguardian.api.entity.RedZone;
@@ -30,6 +31,11 @@ public class RedZoneController {
     @GetMapping("/redzone/{name}") 
     public RedZone getRedZoneByName(@PathVariable String name) {
         return redZService.findRedZoneByName(name);
+    }
+
+    @GetMapping("/redzone/camIp")
+    public List<RedZone> getRedZonesByCamIp(@RequestParam String camIp) {
+        return redZService.findByCamIp(camIp);
     }
 
     @PostMapping("/redzone")

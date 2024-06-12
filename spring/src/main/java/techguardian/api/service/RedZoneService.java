@@ -29,6 +29,10 @@ public class RedZoneService {
         return redZRepo.findRedZoneByName(name);  
     }
 
+    public List<RedZone> findByCamIp(String camIp) {
+        return redZRepo.findByCamIpContaining(camIp);
+    }
+
     public RedZone createRedZone(RedZone createdRedZone) {
         RedZone redZone = new RedZone();
     
