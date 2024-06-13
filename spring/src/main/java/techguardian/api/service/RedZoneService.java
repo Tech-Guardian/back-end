@@ -43,6 +43,7 @@ public class RedZoneService {
     
         return redZRepo.save(redZone);
     }
+    
     public RedZone updateRedZone(Long id, RedZone updatedRedZone) {
         RedZone redZone = redZRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("RedZone não encontrada - ID: " + id));
@@ -72,10 +73,14 @@ public class RedZoneService {
         }
     }
 
-    public RedZone addRestrictDate(Long id, String restrictDate) {
+    public RedZone addRestrictDateTime(Long id, String restrictDate, String restrictHour) {
         RedZone redZone = redZRepo.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "RedZone não encontrada - ID: " + id));
+
         redZone.setRestrictDate(restrictDate);
+        redZone.setRestrictHour(restrictHour);
+
         return redZRepo.save(redZone);
     }
+
 }

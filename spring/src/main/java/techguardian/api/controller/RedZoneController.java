@@ -1,9 +1,9 @@
 package techguardian.api.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -48,9 +48,11 @@ public class RedZoneController {
         return redZService.deleteRedZone(id);
     }
 
-    @PostMapping("/redzone/{id}/restrict-date")
-    public ResponseEntity<RedZone> addRestrictDate(@PathVariable Long id, @RequestBody RedZone restrictDate) {
-        RedZone updatedRedZone = redZService.addRestrictDate(id, restrictDate.getRestrictDate());
-        return ResponseEntity.ok(updatedRedZone);
+    @PutMapping("/redzone/{id}/restrict")
+    public RedZone addRestrictDateTime(@PathVariable Long id, @RequestBody Map<String, String> restrictDateTimeMap) {
+        String restrictDate = restrictDateTimeMap.get("restrictDate");
+        String restrictHour = restrictDateTimeMap.get("restrictHour");
+        return redZService.addRestrictDateTime(id, restrictDate, restrictHour);
     }
+
 }

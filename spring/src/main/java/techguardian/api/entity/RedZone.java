@@ -27,6 +27,9 @@ public class RedZone {
     @Column(name = "restrict_date")
     private String restrictDate;
 
+    @Column(name = "restrict_hour")
+    private String restrictHour;
+
     @ManyToOne
     @JoinColumn(name = "area_id")
     private Area area;
@@ -61,6 +64,14 @@ public class RedZone {
 
     public void setRestrictDate(String restrictDate) {
         this.restrictDate = restrictDate;
+    }
+
+    public String getRestrictHour() {
+        return restrictHour;
+    }
+
+    public void setRestrictHour(String restrictHour) {
+        this.restrictHour = restrictHour;
     }
 
     public Area getArea() {

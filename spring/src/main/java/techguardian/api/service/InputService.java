@@ -42,9 +42,17 @@ public class InputService {
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "RedZone não encontrada - ID: " + createdInput.getRedZone().getId()));
             input.setRedZone(redZone);
 
-            if (redZone.getRestrictDate() != null && redZone.getRestrictDate().equals(createdInput.getDataEntrada())) {
-                input.setObsEntrada("Alerta: Entrada em um dia não autorizado.");
+            String obs = input.getObsEntrada();
+
+            if (redZone.getRestrictDate() != null && redZone.getRestrictDate().equals(createdInput.getDataEntrada().toString())) {
+                obs = addInput(obs, "Alerta: Entrada em um dia não autorizado.");
             }
+
+            if (redZone.getRestrictHour() != null && redZone.getRestrictHour().equals(createdInput.getHoraEntrada().toString())) {
+                obs = addInput(obs, "Alerta: Entrada em um horário não autorizado.");
+            }
+
+            input.setObsEntrada(obs);
         }
 
         return inputRepo.save(input);
@@ -90,5 +98,13 @@ public class InputService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Entrada não encontrada - ID: " + id));
         inputRepo.deleteById(id);
         return input;
+    }
+
+    public String addInput(String existingObs, String newObs) {
+        if (existingObs == null || existingObs.isEmpty()) {
+            return newObs;
+        } else {
+            return existingObs + ";" + newObs;
+        }
     }
 }
