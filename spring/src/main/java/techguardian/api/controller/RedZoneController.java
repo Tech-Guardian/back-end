@@ -49,10 +49,8 @@ public class RedZoneController {
     }
 
     @PutMapping("/redzone/{id}/restrict")
-    public RedZone addRestrictDateTime(@PathVariable Long id, @RequestBody Map<String, String> restrictDateTimeMap) {
-        String restrictDate = restrictDateTimeMap.get("restrictDate");
-        String restrictHour = restrictDateTimeMap.get("restrictHour");
-        return redZService.addRestrictDateTime(id, restrictDate, restrictHour);
+    public RedZone addRestrictDateTime(@PathVariable Long id, @RequestBody Map<String, String> restrictDateTime) {
+        return redZService.addRestrictDateTime(id, restrictDateTime);
     }
 
 }

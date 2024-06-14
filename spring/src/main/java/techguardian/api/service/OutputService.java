@@ -44,12 +44,12 @@ public class OutputService {
 
             String obs = output.getObsSaida();
 
-            if (redZone.getRestrictDate() != null && redZone.getRestrictDate().equals(createdOutput.getDataSaida().toString())) {
-                obs = addOutput(obs, "Alerta: Entrada em um dia não autorizado.");
+            if (redZone.getEndDate() != null && redZone.getEndDate().equals(createdOutput.getDataSaida().toString())) {
+                obs = addOutput(obs, "Alerta: Saída em um dia não autorizado.");
             }
 
-            if (redZone.getRestrictHour() != null && redZone.getRestrictHour().equals(createdOutput.getHoraSaida().toString())) {
-                obs = addOutput(obs, "Alerta: Entrada em um horário não autorizado.");
+            if (redZone.getEndHour() != null && redZone.getEndHour().equals(createdOutput.getHoraSaida().toString())) {
+                obs = addOutput(obs, "Alerta: Saída em um horário não autorizado.");
             }
 
             output.setObsSaida(obs);

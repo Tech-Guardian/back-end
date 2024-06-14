@@ -44,11 +44,11 @@ public class InputService {
 
             String obs = input.getObsEntrada();
 
-            if (redZone.getRestrictDate() != null && redZone.getRestrictDate().equals(createdInput.getDataEntrada().toString())) {
+            if (redZone.getStartDate() != null && redZone.getStartDate().equals(createdInput.getDataEntrada().toString())) {
                 obs = addInput(obs, "Alerta: Entrada em um dia não autorizado.");
             }
 
-            if (redZone.getRestrictHour() != null && redZone.getRestrictHour().equals(createdInput.getHoraEntrada().toString())) {
+            if (redZone.getStartHour() != null && redZone.getStartHour().equals(createdInput.getHoraEntrada().toString())) {
                 obs = addInput(obs, "Alerta: Entrada em um horário não autorizado.");
             }
 

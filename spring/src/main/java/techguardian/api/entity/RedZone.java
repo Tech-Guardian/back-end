@@ -24,11 +24,17 @@ public class RedZone {
     @Column(name = "cam")
     private String camIp;
 
-    @Column(name = "restrict_date")
-    private String restrictDate;
+    @Column(name = "start_date")
+    private String startDate;
 
-    @Column(name = "restrict_hour")
-    private String restrictHour;
+    @Column(name = "end_date")
+    private String endDate;
+
+    @Column(name = "start_hour")
+    private String startHour;
+
+    @Column(name = "end_hour")
+    private String endHour;
 
     @ManyToOne
     @JoinColumn(name = "area_id")
@@ -58,20 +64,36 @@ public class RedZone {
         this.camIp = camIp;
     }
 
-    public String getRestrictDate() {
-        return restrictDate;
+    public String getStartDate() {
+        return startDate;
     }
 
-    public void setRestrictDate(String restrictDate) {
-        this.restrictDate = restrictDate;
+    public void setStartDate(String startDate) {
+        this.startDate = startDate;
     }
 
-    public String getRestrictHour() {
-        return restrictHour;
+    public String getEndDate() {
+        return endDate;
     }
 
-    public void setRestrictHour(String restrictHour) {
-        this.restrictHour = restrictHour;
+    public void setEndDate(String endDate) {
+        this.endDate = endDate;
+    }
+
+    public String getStartHour() {
+        return startHour;
+    }
+
+    public void setStartHour(String startHour) {
+        this.startHour = startHour;
+    }
+
+    public String getEndHour() {
+        return endHour;
+    }
+
+    public void setEndHour(String endHour) {
+        this.endHour = endHour;
     }
 
     public Area getArea() {

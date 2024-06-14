@@ -1,6 +1,7 @@
 package techguardian.api.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -73,12 +74,14 @@ public class RedZoneService {
         }
     }
 
-    public RedZone addRestrictDateTime(Long id, String restrictDate, String restrictHour) {
+    public RedZone addRestrictDateTime(Long id, Map<String, String> restrictInfo) {
         RedZone redZone = redZRepo.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "RedZone não encontrada - ID: " + id));
 
-        redZone.setRestrictDate(restrictDate);
-        redZone.setRestrictHour(restrictHour);
+        redZone.setStartDate(restrictInfo.get("startDate"));
+        redZone.setStartHour(restrictInfo.get("startHour"));
+        redZone.setEndDate(restrictInfo.get("endDate"));
+        redZone.setEndHour(restrictInfo.get("endHour"));
 
         return redZRepo.save(redZone);
     }
