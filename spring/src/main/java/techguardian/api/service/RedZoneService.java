@@ -1,6 +1,7 @@
 package techguardian.api.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -47,6 +48,7 @@ public class RedZoneService {
     
         return redZRepo.save(redZone);
     }
+    
     public RedZone updateRedZone(Long id, RedZone updatedRedZone) {
         RedZone redZone = redZRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("RedZone não encontrada - ID: " + id));
@@ -68,11 +70,24 @@ public class RedZoneService {
         return redZone;
     }
 
-    private String addCamIp(String existingCamIp, String newCamIp) {
+    public String addCamIp(String existingCamIp, String newCamIp) {
         if (existingCamIp == null || existingCamIp.isEmpty()) {
             return newCamIp;
         } else {
             return existingCamIp + ";" + newCamIp;
         }
     }
+
+    public RedZone addRestrictDateTime(Long id, Map<String, String> restrictInfo) {
+        RedZone redZone = redZRepo.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "RedZone não encontrada - ID: " + id));
+
+        redZone.setStartDate(restrictInfo.get("startDate"));
+        redZone.setStartHour(restrictInfo.get("startHour"));
+        redZone.setEndDate(restrictInfo.get("endDate"));
+        redZone.setEndHour(restrictInfo.get("endHour"));
+
+        return redZRepo.save(redZone);
+    }
+
 }

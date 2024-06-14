@@ -24,6 +24,18 @@ public class RedZone {
     @Column(name = "cam")
     private String camIp;
 
+    @Column(name = "start_date")
+    private String startDate;
+
+    @Column(name = "end_date")
+    private String endDate;
+
+    @Column(name = "start_hour")
+    private String startHour;
+
+    @Column(name = "end_hour")
+    private String endHour;
+
     @ManyToOne
     @JoinColumn(name = "area_id")
     private Area area;
@@ -50,6 +62,38 @@ public class RedZone {
 
     public void setCamIp(String camIp) {
         this.camIp = camIp;
+    }
+
+    public String getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(String startDate) {
+        this.startDate = startDate;
+    }
+
+    public String getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(String endDate) {
+        this.endDate = endDate;
+    }
+
+    public String getStartHour() {
+        return startHour;
+    }
+
+    public void setStartHour(String startHour) {
+        this.startHour = startHour;
+    }
+
+    public String getEndHour() {
+        return endHour;
+    }
+
+    public void setEndHour(String endHour) {
+        this.endHour = endHour;
     }
 
     public Area getArea() {

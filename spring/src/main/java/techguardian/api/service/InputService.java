@@ -10,13 +10,18 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.server.ResponseStatusException;
 
 import techguardian.api.entity.Input;
+import techguardian.api.entity.RedZone;
 import techguardian.api.repository.InputRepository;
+import techguardian.api.repository.RedZoneRepository;
 
 @Service
 public class InputService {
 
     @Autowired
     private InputRepository inputRepo;
+
+    @Autowired
+    private RedZoneRepository redZRepo;
 
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public List<Input> findAll() {
@@ -31,7 +36,24 @@ public class InputService {
         input.setQuantEntrada(createdInput.getQuantEntrada());
         input.setStatusEntrada(createdInput.getStatusEntrada());
         input.setObsEntrada(createdInput.getObsEntrada());
-        input.setRedZone(createdInput.getRedZone());
+
+        if (createdInput.getRedZone() != null) {
+            RedZone redZone = redZRepo.findById(createdInput.getRedZone().getId())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "RedZone não encontrada - ID: " + createdInput.getRedZone().getId()));
+            input.setRedZone(redZone);
+
+            String obs = input.getObsEntrada();
+
+            if (redZone.getStartDate() != null && redZone.getStartDate().equals(createdInput.getDataEntrada().toString())) {
+                obs = addInput(obs, "Alerta: Entrada em um dia não autorizado.");
+            }
+
+            if (redZone.getStartHour() != null && redZone.getStartHour().equals(createdInput.getHoraEntrada().toString())) {
+                obs = addInput(obs, "Alerta: Entrada em um horário não autorizado.");
+            }
+
+            input.setObsEntrada(obs);
+        }
 
         return inputRepo.save(input);
     }
@@ -62,7 +84,9 @@ public class InputService {
     }
 
     if (!ObjectUtils.isEmpty(updatedInput.getRedZone())) {
-        existInput.setRedZone(updatedInput.getRedZone());
+        RedZone redZone = redZRepo.findById(updatedInput.getRedZone().getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "RedZone não encontrada - ID: " + updatedInput.getRedZone().getId()));
+        existInput.setRedZone(redZone);
     }
 
     return inputRepo.save(existInput);
@@ -74,5 +98,13 @@ public class InputService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Entrada não encontrada - ID: " + id));
         inputRepo.deleteById(id);
         return input;
+    }
+
+    public String addInput(String existingObs, String newObs) {
+        if (existingObs == null || existingObs.isEmpty()) {
+            return newObs;
+        } else {
+            return existingObs + ";" + newObs;
+        }
     }
 }
