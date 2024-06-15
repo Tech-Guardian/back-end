@@ -1,13 +1,6 @@
-# ports:
-#   - port: 8080
-#     visibility: public
-# image: 
-#   file: .gitpod.Dockerfile
-
-  image:
+image:
   file: .gitpod.Dockerfile
 
-# Comandos a serem executados na inicialização do ambiente
 tasks:
   - name: Install Python dependencies
     command: pip install -r requirements.txt
@@ -17,11 +10,9 @@ tasks:
       sleep 5
       mysql -u root -ppass123 < DDL.sql
 
-# Abra a porta 8080 para acesso ao aplicativo Spring Boot
 ports:
   - port: 8080
     onOpen: ignore
 
-# Tarefa a ser executada automaticamente após a inicialização
-onStart: 
+onStart:
   - echo "Workspace is ready."
