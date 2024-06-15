@@ -8,11 +8,7 @@ tasks:
     command: |
       sudo service mysql start
       sleep 5
-      mysql -u root -ppass123 < DDL.sql
+      mysql -u root -p pass123 < DDL.sql
 
 ports:
   - port: 8080
-    onOpen: ignore
-
-onStart:
-  - echo "Workspace is ready."
